@@ -5,6 +5,7 @@ import Table from "../../components/Table";
 import Block from "../../types/block";
 import { getBlocks } from "../../api/blocks";
 import moment from "moment";
+import { useRouter } from "next/router";
 
 const tableConfig = [
   {
@@ -58,18 +59,24 @@ export default function BlockListPage() {
       setTotal(blocks.total);
     })();
   }, [page]);
+  const router = useRouter();
   return (
     <Layout>
       <Typography variant="h4" sx={{ fontWeight: "bold", marginBottom: 3 }}>
         Blocks
       </Typography>
       <Table
+        pagination={{
+          total,
+          rowPerPage: ROW_PER_PAGE,
+          currentPage: page,
+          handlePageChange,
+        }}
         config={tableConfig}
         data={data}
-        total={total}
-        rowPerPage={ROW_PER_PAGE}
-        currentPage={page}
-        handlePageChange={handlePageChange}
+        onClickRow={(row: Block) => {
+          router.push(`/blocks/${row.height}`);
+        }}
       />
     </Layout>
   );

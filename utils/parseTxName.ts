@@ -4,5 +4,9 @@ export function parseTxName(tx: string) {
   ) {
     return "Block Reward";
   }
-  return tx
+  return null;
+}
+
+export function shortTxString(tx: string) {
+  return tx.slice(0, 4) + "..." + tx.slice(tx.length - 4, tx.length);
 }

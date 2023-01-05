@@ -1,20 +1,35 @@
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Box,
-  Grid,
-  Typography,
-} from "@mui/material";
+import { Box, Grid, Typography } from "@mui/material";
 import Layout from "../../components/Layout";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { TransactionRow } from "../../components/TransactionRow";
+import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/router";
+import { BlockDetail } from "../../types/block";
+import { getBlockByHeight } from "../../api/blocks";
+import moment from "moment";
+import Link from "next/link";
+import TransactionCollapse from "../../components/TransactionCollapse";
 
 export default function BlockDetailPage() {
-  return (
+  const router = useRouter();
+  const height = useMemo(
+    () => router.query.height as string,
+    [router.query.height]
+  );
+  const [blockData, setBlockData] = useState<BlockDetail>();
+
+  useEffect(() => {
+    (async () => {
+      if (height) {
+        try {
+          const _blockData = await getBlockByHeight(parseInt(height));
+          setBlockData(_blockData);
+        } catch (e) {}
+      }
+    })();
+  }, [height]);
+  return blockData ? (
     <Layout>
       <Typography variant="h4" sx={{ fontWeight: "bold", marginBottom: 3 }}>
-        Detail of Block #0
+        Detail of Block #{blockData?.header?.height}
       </Typography>
       <Box
         sx={{
@@ -47,7 +62,9 @@ export default function BlockDetailPage() {
                   lineHeight: "28px",
                 }}
               >
-                04/01/2023 23:21:19
+                {moment
+                  .unix(blockData?.header?.timestamp)
+                  .format("DD/MM/YYYY HH:mm:ss")}
               </Typography>
             </Grid>
             <Grid item xs={1.2}>
@@ -69,7 +86,7 @@ export default function BlockDetailPage() {
                   lineHeight: "28px",
                 }}
               >
-                836137
+                {blockData?.header?.nonce}
               </Typography>
             </Grid>
             <Grid item xs={2.5}>
@@ -91,7 +108,7 @@ export default function BlockDetailPage() {
                   lineHeight: "28px",
                 }}
               >
-                0x1f0fffff
+                {blockData?.header?.bits}
               </Typography>
             </Grid>
           </Grid>
@@ -105,7 +122,7 @@ export default function BlockDetailPage() {
               fontWeight: "bold",
             }}
           >
-            Hash
+            {blockData?.header?.height === 0 ? "Genesis" : "Block"} hash
           </Typography>
           <Typography
             component="span"
@@ -115,7 +132,7 @@ export default function BlockDetailPage() {
               lineHeight: "28px",
             }}
           >
-            00013124edde6740c2a112342021e759e21403df77cbf7406d598d434f2f4be8
+            {blockData?.header?.hash}
           </Typography>
         </Box>
         <Box sx={{ marginTop: 2 }}>
@@ -137,7 +154,7 @@ export default function BlockDetailPage() {
               lineHeight: "28px",
             }}
           >
-            36e11e3c1651267cfb0f002908e1a610d250cbca7e24fbd7b5853a19d11a4e65
+            {blockData?.header?.merkle_root}
           </Typography>
         </Box>
         <Box sx={{ marginTop: 2 }}>
@@ -149,18 +166,39 @@ export default function BlockDetailPage() {
               fontWeight: "bold",
             }}
           >
-            Previous block hash
+            Previous Block Hash
           </Typography>
-          <Typography
-            component="span"
-            sx={{
-              color: "#1e2329",
-              fontSize: 20,
-              lineHeight: "28px",
-            }}
-          >
-            0000000000000000000000000000000000000000000000000000000000000000
-          </Typography>
+          {blockData?.header?.height === 0 ? (
+            <Typography
+              component="span"
+              sx={{
+                color: "#1e2329",
+                fontSize: 20,
+                lineHeight: "28px",
+              }}
+            >
+              {blockData?.header?.prev_block_hash}
+            </Typography>
+          ) : (
+            <Link
+              href={`/blocks/${blockData?.header?.height - 1}`}
+              style={{
+                textDecoration: "none",
+              }}
+            >
+              <Typography
+                component="span"
+                sx={{
+                  color: "#1e2329",
+                  fontSize: 20,
+                  lineHeight: "28px",
+                  textDecoration: "underline",
+                }}
+              >
+                {blockData?.header?.prev_block_hash}
+              </Typography>
+            </Link>
+          )}
         </Box>
       </Box>
       <Box
@@ -173,47 +211,12 @@ export default function BlockDetailPage() {
         <Typography variant="h5" component="span" sx={{ fontWeight: "bold" }}>
           Transactions
         </Typography>
-        <Box sx={{ marginTop: 2 }}>
-          <Accordion>
-            <AccordionSummary
-              expandIcon={<ExpandMoreIcon />}
-              aria-controls={`tx-0-content`}
-              id={`tx-0-header`}
-            >
-              <Typography>
-                <b>Transaction</b> #0 -{" "}
-                <Typography
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    // Copy to clipboard
-                  }}
-                  component={"span"}
-                  sx={{ color: "#ad9223" }}
-                >
-                  (00013...4be8)
-                </Typography>
-              </Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <Box>
-                <Grid container>
-                  <Grid item xs={6}>
-                    <Typography variant="h6" sx={{ marginBottom: 2 }}>
-                      From
-                    </Typography>
-                    <TransactionRow id={1} address="0" isFrom />
-                    <TransactionRow id={1} address="0" isFrom />
-                    <TransactionRow id={1} address="0" isFrom />
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Typography variant="h6">To</Typography>
-                  </Grid>
-                </Grid>
-              </Box>
-            </AccordionDetails>
-          </Accordion>
-        </Box>
+        {blockData?.transactions?.map((tx, i) => (
+          <TransactionCollapse key={`tx-collapse-${i}`} tx={tx} idx={i} />
+        ))}
       </Box>
     </Layout>
+  ) : (
+    "Not found"
   );
 }

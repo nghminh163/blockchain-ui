@@ -1,11 +1,25 @@
 import { Box, Typography } from "@mui/material";
+import { isNumber } from "lodash";
+import Link from "next/link";
+import { RATE_UCOIN } from "../constants";
+import { shortTxString } from "../utils/parseTxName";
 
 interface ITransactionRowProps {
   id: number;
   address: string;
   isFrom?: boolean;
+  prevTx?: string;
+  amount?: number;
+  onClick: () => void;
 }
-export function TransactionRow({ id, address, isFrom }: ITransactionRowProps) {
+export function TransactionRow({
+  id,
+  address,
+  isFrom,
+  prevTx,
+  amount,
+  onClick,
+}: ITransactionRowProps) {
   return (
     <Box sx={{ marginTop: 2, borderBottom: "1px solid #f5f5f5" }}>
       <div style={{ display: "flex", alignItems: "center", marginBottom: 8 }}>
@@ -27,7 +41,7 @@ export function TransactionRow({ id, address, isFrom }: ITransactionRowProps) {
             {"•"}
             <Typography
               component="span"
-              onClick={() => alert(1)}
+              onClick={onClick}
               sx={{
                 fontWeight: "bold",
                 cursor: "pointer",
@@ -35,19 +49,34 @@ export function TransactionRow({ id, address, isFrom }: ITransactionRowProps) {
                 color: "#e64a19",
               }}
             >
-              {isFrom ? "Locking" : "Unlocking"}
+              {isFrom ? "Unlocking" : "Locking"}
               {" script"}
             </Typography>
           </Box>
 
-          <Typography
-            sx={{
-              fontSize: 12,
-              fontWeight: "500",
-            }}
-          >
-            10 UCoin
-          </Typography>
+          {prevTx && (
+            <Typography
+              sx={{
+                fontSize: 12,
+                fontWeight: "500",
+              }}
+            >
+              Previous Tx:{" "}
+              <Link href={`/transactions/${prevTx}`}>
+                {shortTxString(prevTx)}
+              </Link>
+            </Typography>
+          )}
+          {isNumber(amount) && (
+            <Typography
+              sx={{
+                fontSize: 12,
+                fontWeight: "500",
+              }}
+            >
+              Amount: {amount} UCoin ~ ${amount * RATE_UCOIN}
+            </Typography>
+          )}
         </div>
       </div>
     </Box>

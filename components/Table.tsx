@@ -12,23 +12,27 @@ interface ITableProps {
     align?: string;
   }[];
   data: any[];
-  total: number;
-  rowPerPage: number;
-  currentPage: number;
-  handlePageChange: (page: number) => void;
+  pagination?: {
+    total: number;
+    rowPerPage: number;
+    currentPage: number;
+    handlePageChange: (page: number) => void;
+  };
+  onClickRow: (row: any) => void;
 }
 
 export default function Table({
   config,
   data,
-  total,
-  rowPerPage,
-  currentPage,
-  handlePageChange,
+  pagination,
+  onClickRow = (row: any) => {},
 }: ITableProps) {
   const isLastPage = useMemo(
-    () => currentPage + 1 === Math.round(total / rowPerPage),
-    [currentPage, rowPerPage, total]
+    () =>
+      pagination &&
+      pagination?.currentPage + 1 ===
+        Math.round(pagination?.total / pagination?.rowPerPage),
+    [pagination]
   );
   return (
     <>
@@ -77,6 +81,7 @@ export default function Table({
           }}
           paddingX={1}
           key={`table-row-${i}`}
+          onClick={() => onClickRow(v)}
         >
           <Grid container>
             {config.map((header, j) => {
@@ -111,38 +116,41 @@ export default function Table({
           </Grid>
         </Box>
       ))}
-      <Box
-        sx={{ marginTop: 1.5, paddingX: 1 }}
-        display="flex"
-        justifyContent="space-between"
-      >
-        <Typography component="span">
-          Total {total} rows, {rowPerPage * currentPage + 1} ~{" "}
-          {rowPerPage * currentPage + 10} rows
-        </Typography>
-        <Box alignItems="center" display="flex">
-          <IconButton
-            sx={{ marginX: 1 }}
-            onClick={() => {
-              handlePageChange(currentPage - 1);
-            }}
-            disabled={currentPage === 0}
-          >
-            <KeyboardArrowLeftIcon />
-          </IconButton>
-          <Typography>{currentPage + 1}</Typography>
+      {pagination && (
+        <Box
+          sx={{ marginTop: 1.5, paddingX: 1 }}
+          display="flex"
+          justifyContent="space-between"
+        >
+          <Typography component="span">
+            Total {pagination?.total} rows,{" "}
+            {pagination?.rowPerPage * pagination?.currentPage + 1} ~{" "}
+            {pagination?.rowPerPage * pagination?.currentPage + 10} rows
+          </Typography>
+          <Box alignItems="center" display="flex">
+            <IconButton
+              sx={{ marginX: 1 }}
+              onClick={() => {
+                pagination?.handlePageChange(pagination?.currentPage - 1);
+              }}
+              disabled={pagination?.currentPage === 0}
+            >
+              <KeyboardArrowLeftIcon />
+            </IconButton>
+            <Typography>{pagination?.currentPage + 1}</Typography>
 
-          <IconButton
-            sx={{ marginX: 1 }}
-            onClick={() => {
-              handlePageChange(currentPage + 1);
-            }}
-            disabled={isLastPage}
-          >
-            <KeyboardArrowRightIcon />
-          </IconButton>
+            <IconButton
+              sx={{ marginX: 1 }}
+              onClick={() => {
+                pagination?.handlePageChange(pagination?.currentPage + 1);
+              }}
+              disabled={isLastPage}
+            >
+              <KeyboardArrowRightIcon />
+            </IconButton>
+          </Box>
         </Box>
-      </Box>
+      )}
     </>
   );
 }

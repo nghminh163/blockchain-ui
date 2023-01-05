@@ -14,7 +14,7 @@ interface Block extends BlockHeader {
 
 export default Block;
 
-interface BlockTx {
+export interface BlockTx {
   hash: string;
   inputs: {
     output_index: number;
