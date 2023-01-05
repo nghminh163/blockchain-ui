@@ -61,7 +61,7 @@ export default function Layout({ children }: LayoutProps) {
       </Drawer>
       <Box
         component="main"
-        sx={{ flexGrow: 1, bgcolor: "background.default", p: 2 }}
+        sx={{ flexGrow: 1, bgcolor: "background.default", p: 2.5 }}
       >
         <Toolbar />
         {children}

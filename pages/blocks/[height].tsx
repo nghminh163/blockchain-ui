@@ -4,163 +4,216 @@ import {
   AccordionSummary,
   Box,
   Grid,
-  Link,
   Typography,
 } from "@mui/material";
-import moment from "moment";
-import router, { useRouter } from "next/router";
-import { useEffect, useMemo, useState } from "react";
-import { getBlockByHeight } from "../../api/blocks";
-import { BlockDetail } from "../../types/block";
+import Layout from "../../components/Layout";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { parseTxName } from "../../utils/parseTxName";
+import { TransactionRow } from "../../components/TransactionRow";
 
 export default function BlockDetailPage() {
-  const [blockData, setBlockData] = useState<BlockDetail>();
-  const [isLoading, setIsLoading] = useState(true);
-  const router = useRouter();
-  const currHeight = useMemo(() => {
-    const height = router.query?.height;
-    if (height) {
-      try {
-        return parseInt(height.toString());
-      } catch (e) {}
-    }
-    return undefined;
-  }, [router.query?.height]);
-  useEffect(() => {
-    (async () => {
-      const height = router.query?.height;
-      if (height) {
-        try {
-          const block = await getBlockByHeight(parseInt(height.toString()));
-          setBlockData(block);
-        } catch (e) {
-          console.error(e);
-        }
-      }
-      setIsLoading(false);
-    })();
-  }, [router.query?.height]);
-  return isLoading ? (
-    <span>Loading</span>
-  ) : blockData ? (
-    <BlockDetailUI blockData={blockData} currHeight={currHeight} />
-  ) : (
-    <span>Block not found</span>
-  );
-}
-
-function BlockDetailUI({
-  blockData,
-  currHeight,
-}: {
-  blockData: BlockDetail;
-  currHeight: number;
-}) {
   return (
-    <Box m={1}>
-      <Typography variant="h4">
-        Detail of block #{blockData.header.height}
+    <Layout>
+      <Typography variant="h4" sx={{ fontWeight: "bold", marginBottom: 3 }}>
+        Detail of Block #0
       </Typography>
-      <Box marginBottom={0.5}>
-        <Grid container>
-          <Grid item xs={3}>
-            <Typography variant="h6">Bits: {blockData.header.bits}</Typography>
+      <Box
+        sx={{
+          borderTop: "1px solid #e0e0e0",
+          borderBottom: "1px solid #e0e0e0",
+          paddingY: 4,
+        }}
+      >
+        <Typography variant="h5" component="span" sx={{ fontWeight: "bold" }}>
+          Overview
+        </Typography>
+        <Box sx={{ marginTop: 2 }}>
+          <Grid container>
+            <Grid item xs={2.5}>
+              <Typography
+                sx={{
+                  color: "#474d57",
+                  fontSize: 12,
+                  lineHeight: "32px",
+                  fontWeight: "bold",
+                }}
+              >
+                Time
+              </Typography>
+              <Typography
+                component="span"
+                sx={{
+                  color: "#1e2329",
+                  fontSize: 20,
+                  lineHeight: "28px",
+                }}
+              >
+                04/01/2023 23:21:19
+              </Typography>
+            </Grid>
+            <Grid item xs={1.2}>
+              <Typography
+                sx={{
+                  color: "#474d57",
+                  fontSize: 12,
+                  lineHeight: "32px",
+                  fontWeight: "bold",
+                }}
+              >
+                Nonce
+              </Typography>
+              <Typography
+                component="span"
+                sx={{
+                  color: "#1e2329",
+                  fontSize: 20,
+                  lineHeight: "28px",
+                }}
+              >
+                836137
+              </Typography>
+            </Grid>
+            <Grid item xs={2.5}>
+              <Typography
+                sx={{
+                  color: "#474d57",
+                  fontSize: 12,
+                  lineHeight: "32px",
+                  fontWeight: "bold",
+                }}
+              >
+                Bits
+              </Typography>
+              <Typography
+                component="span"
+                sx={{
+                  color: "#1e2329",
+                  fontSize: 20,
+                  lineHeight: "28px",
+                }}
+              >
+                0x1f0fffff
+              </Typography>
+            </Grid>
           </Grid>
-          <Grid item xs={9}>
-            <Typography variant="h6">Hash: {blockData.header.hash}</Typography>
-          </Grid>
-          <Grid item xs={3}>
-            <Typography variant="h6">
-              Nonce: {blockData.header.nonce}
-            </Typography>
-          </Grid>
-          <Grid item xs={9}>
-            <Typography variant="h6">
-              Merkel Root: {blockData.header.merkle_root}
-            </Typography>
-          </Grid>
-          <Grid item xs={3}>
-            <Typography variant="h6">
-              Time:{" "}
-              {moment
-                .unix(blockData.header.timestamp)
-                .format("DD/MM/YYYY HH:mm:ss")}
-            </Typography>
-          </Grid>
-          <Grid item xs={9}>
-            <Typography variant="h6">
-              Previous block hash:{" "}
-              {currHeight !== 0 ? (
-                <Link href={`/blocks/${currHeight - 1}`}>
-                  {blockData.header.prev_block_hash}
-                </Link>
-              ) : (
-                blockData.header.prev_block_hash
-              )}
-            </Typography>
-          </Grid>
-        </Grid>
+        </Box>
+        <Box sx={{ marginTop: 2 }}>
+          <Typography
+            sx={{
+              color: "#474d57",
+              fontSize: 12,
+              lineHeight: "32px",
+              fontWeight: "bold",
+            }}
+          >
+            Hash
+          </Typography>
+          <Typography
+            component="span"
+            sx={{
+              color: "#1e2329",
+              fontSize: 20,
+              lineHeight: "28px",
+            }}
+          >
+            00013124edde6740c2a112342021e759e21403df77cbf7406d598d434f2f4be8
+          </Typography>
+        </Box>
+        <Box sx={{ marginTop: 2 }}>
+          <Typography
+            sx={{
+              color: "#474d57",
+              fontSize: 12,
+              lineHeight: "32px",
+              fontWeight: "bold",
+            }}
+          >
+            Merkel Root
+          </Typography>
+          <Typography
+            component="span"
+            sx={{
+              color: "#1e2329",
+              fontSize: 20,
+              lineHeight: "28px",
+            }}
+          >
+            36e11e3c1651267cfb0f002908e1a610d250cbca7e24fbd7b5853a19d11a4e65
+          </Typography>
+        </Box>
+        <Box sx={{ marginTop: 2 }}>
+          <Typography
+            sx={{
+              color: "#474d57",
+              fontSize: 12,
+              lineHeight: "32px",
+              fontWeight: "bold",
+            }}
+          >
+            Previous block hash
+          </Typography>
+          <Typography
+            component="span"
+            sx={{
+              color: "#1e2329",
+              fontSize: 20,
+              lineHeight: "28px",
+            }}
+          >
+            0000000000000000000000000000000000000000000000000000000000000000
+          </Typography>
+        </Box>
       </Box>
-      {blockData.transactions.length > 0 &&
-        blockData.transactions.map((tx, i) => (
-          <Accordion key={`tx-${i}`}>
+      <Box
+        sx={{
+          borderTop: "1px solid #e0e0e0",
+          borderBottom: "1px solid #e0e0e0",
+          paddingY: 4,
+        }}
+      >
+        <Typography variant="h5" component="span" sx={{ fontWeight: "bold" }}>
+          Transactions
+        </Typography>
+        <Box sx={{ marginTop: 2 }}>
+          <Accordion>
             <AccordionSummary
               expandIcon={<ExpandMoreIcon />}
-              aria-controls={`tx-${i}-content`}
-              id={`tx-${i}-header`}
+              aria-controls={`tx-0-content`}
+              id={`tx-0-header`}
             >
               <Typography>
-                Transaction #{i} ({tx.hash})
+                <b>Transaction</b> #0 -{" "}
+                <Typography
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    // Copy to clipboard
+                  }}
+                  component={"span"}
+                  sx={{ color: "#ad9223" }}
+                >
+                  (00013...4be8)
+                </Typography>
               </Typography>
             </AccordionSummary>
             <AccordionDetails>
-              <Grid container>
-                <Grid item xs={6}>
-                  <Typography variant="h6">From</Typography>
-                  {tx.inputs.map((input, j) => (
-                    <Box key={`tx-${i}-input-${j}`}>
-                      <div style={{ display: "flex", alignItems: "center" }}>
-                        <Typography variant="body1" sx={{ marginRight: 2 }}>
-                          #{j + 1}
-                        </Typography>
-                        <div>
-                          <Typography variant="body1">
-                            {parseTxName(input.prev_tx)}
-                          </Typography>
-                          <Typography variant="body1">
-                            {/* {input..amount} UCoin */}
-                          </Typography>
-                        </div>
-                      </div>
-                    </Box>
-                  ))}
+              <Box>
+                <Grid container>
+                  <Grid item xs={6}>
+                    <Typography variant="h6" sx={{ marginBottom: 2 }}>
+                      From
+                    </Typography>
+                    <TransactionRow id={1} address="0" isFrom />
+                    <TransactionRow id={1} address="0" isFrom />
+                    <TransactionRow id={1} address="0" isFrom />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Typography variant="h6">To</Typography>
+                  </Grid>
                 </Grid>
-                <Grid item xs={6}>
-                  <Typography variant="h6">To</Typography>
-                  {tx.outputs.map((output, j) => (
-                    <Box key={`tx-${i}-output-${j}`}>
-                      <div style={{ display: "flex", alignItems: "center" }}>
-                        <Typography variant="body1" sx={{ marginRight: 2 }}>
-                          #{j + 1}
-                        </Typography>
-                        <div>
-                          <Typography variant="body1">
-                            Address: {output.addr}
-                          </Typography>
-                          <Typography variant="body1">
-                            {output.amount} UCoin
-                          </Typography>
-                        </div>
-                      </div>
-                    </Box>
-                  ))}
-                </Grid>
-              </Grid>
+              </Box>
             </AccordionDetails>
           </Accordion>
-        ))}
-    </Box>
+        </Box>
+      </Box>
+    </Layout>
   );
 }
