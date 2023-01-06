@@ -7,6 +7,7 @@ export function parseTxName(tx: string) {
   return null;
 }
 
-export function shortTxString(tx: string) {
-  return tx.slice(0, 4) + "..." + tx.slice(tx.length - 4, tx.length);
+export function shortTxString(tx: string = "", length: number = 4) {
+  if (parseTxName(tx)) return parseTxName(tx);
+  return tx.slice(0, length) + "..." + tx.slice(tx.length - length, tx.length);
 }

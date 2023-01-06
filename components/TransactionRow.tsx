@@ -1,6 +1,7 @@
 import { Box, Typography } from "@mui/material";
-import { isNumber } from "lodash";
+import { add, isNumber } from "lodash";
 import Link from "next/link";
+import { useMemo } from "react";
 import { RATE_UCOIN } from "../constants";
 import { shortTxString } from "../utils/parseTxName";
 
@@ -20,6 +21,12 @@ export function TransactionRow({
   amount,
   onClick,
 }: ITransactionRowProps) {
+  const isCoinBase = useMemo(
+    () =>
+      prevTx ===
+      "0000000000000000000000000000000000000000000000000000000000000000",
+    [prevTx]
+  );
   return (
     <Box sx={{ marginTop: 2, borderBottom: "1px solid #f5f5f5" }}>
       <div style={{ display: "flex", alignItems: "center", marginBottom: 8 }}>
@@ -27,17 +34,24 @@ export function TransactionRow({
           #{id}
         </Typography>
         <div>
-          <Box display="flex" gap={0.5}>
-            {address === "Block Reward" ? (
-              <Typography
-                component="span"
-                sx={{
-                  fontSize: 15,
-                  fontWeight: "bold",
-                }}
+          <Box display="flex" gap={0.5} alignItems="center">
+            {isFrom ? (
+              <Link
+                href={`/transactions/${prevTx}`}
+                style={{ textDecoration: "none" }}
               >
-                {address}
-              </Typography>
+                <Typography
+                  component="span"
+                  sx={{
+                    color: "black",
+                    fontSize: 15,
+                    fontWeight: "bold",
+                    textDecoration: "underline",
+                  }}
+                >
+                  {shortTxString(prevTx, 8)}
+                </Typography>
+              </Link>
             ) : (
               <Link
                 href={`/address/${address}`}
@@ -52,7 +66,7 @@ export function TransactionRow({
                     textDecoration: "underline",
                   }}
                 >
-                  {address}
+                  {shortTxString(address, 8)}
                 </Typography>
               </Link>
             )}
@@ -73,16 +87,30 @@ export function TransactionRow({
             </Typography>
           </Box>
 
-          {prevTx && (
+          {isFrom && !isCoinBase && (
             <Typography
               sx={{
                 fontSize: 12,
                 fontWeight: "500",
+                color: "black",
               }}
             >
-              Previous Tx:{" "}
-              <Link href={`/transactions/${prevTx}`}>
-                {shortTxString(prevTx)}
+              From address:{" "}
+              <Link
+                href={`/transactions/${address}`}
+                style={{ textDecoration: "none" }}
+              >
+                <Typography
+                  sx={{
+                    textDecoration: "underline",
+                    fontSize: 12,
+                    fontWeight: "500",
+                    color: "black",
+                  }}
+                  component="span"
+                >
+                  {shortTxString(address, 8)}
+                </Typography>
               </Link>
             </Typography>
           )}

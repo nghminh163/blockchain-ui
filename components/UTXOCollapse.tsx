@@ -14,6 +14,7 @@ import DoDisturbOnIcon from "@mui/icons-material/DoDisturbOn";
 import { useState, MouseEvent, useMemo } from "react";
 import { UTXOTxOut } from "../types/address";
 import moment from "moment";
+import { RATE_UCOIN } from "../constants";
 
 export default function UTXOCollapse({ txOut }: { txOut: UTXOTxOut }) {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
@@ -153,7 +154,7 @@ export default function UTXOCollapse({ txOut }: { txOut: UTXOTxOut }) {
                     }}
                     component={"span"}
                   >
-                    100 UCoin
+                    {txOut.amount} UCoin
                   </Typography>
                   <Typography
                     sx={{
@@ -163,7 +164,7 @@ export default function UTXOCollapse({ txOut }: { txOut: UTXOTxOut }) {
                     }}
                     component="span"
                   >
-                    ≈ $1000
+                    ≈ ${txOut.amount * RATE_UCOIN}
                   </Typography>
                 </Box>
               </Typography>
