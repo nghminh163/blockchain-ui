@@ -9,7 +9,9 @@ import {
   OutlinedInput,
 } from "@mui/material";
 import axios, { AxiosError } from "axios";
+import { useRouter } from "next/router";
 import { useState } from "react";
+import { setTimeout } from "timers/promises";
 import { URL_SERVER } from "../constants";
 
 export default function TransferModal({
@@ -22,6 +24,7 @@ export default function TransferModal({
   const [amount, setAmount] = useState("");
   const [receiver, setReceiver] = useState("");
   const [error, setError] = useState("");
+  const router = useRouter();
   const onSubmitClick = async () => {
     try {
       await axios.post(URL_SERVER + "/transactions", {
@@ -29,6 +32,7 @@ export default function TransferModal({
         receiver,
       });
       onClose();
+      router.push("/mempool");
     } catch (err: any) {
       if (err instanceof AxiosError<{ message: string }>) {
         setError(err?.response?.data?.message);

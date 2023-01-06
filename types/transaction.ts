@@ -9,6 +9,7 @@ export interface TxIn {
   output_index: number;
   prev_tx: string;
   unlocking_script: string;
+  prev_output: TxOut;
 }
 
 export interface TxOut {

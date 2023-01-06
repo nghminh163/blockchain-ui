@@ -10,8 +10,11 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import InboxIcon from "@mui/icons-material/MoveToInbox";
-import MailIcon from "@mui/icons-material/Mail";
+import { useRouter } from "next/router";
+import BlockIcon from "@mui/icons-material/ViewWeek";
+import Mempoolicon from "@mui/icons-material/TableRows";
+import MeIcon from "@mui/icons-material/AccountCircle";
+import PeerIcon from "@mui/icons-material/LeakAdd";
 
 const drawerWidth = 240;
 interface LayoutProps {
@@ -19,6 +22,7 @@ interface LayoutProps {
 }
 
 export default function Layout({ children }: LayoutProps) {
+  const router = useRouter();
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
@@ -47,13 +51,37 @@ export default function Layout({ children }: LayoutProps) {
         <Toolbar />
         <Divider />
         <List>
-          {["Blocks", "Transactions", "Me"].map((text, index) => (
-            <ListItem key={text} disablePadding>
+          {[
+            {
+              title: "Blocks",
+              route: "/blocks",
+              icon: <BlockIcon />,
+            },
+            {
+              title: "Me",
+              route: "/address/me",
+              icon: <MeIcon />,
+            },
+            {
+              title: "Mempool",
+              route: "/mempool",
+              icon: <Mempoolicon />,
+            },
+            {
+              title: "Peers",
+              route: "/peers",
+              icon: <PeerIcon />,
+            },
+          ].map((text, index) => (
+            <ListItem
+              onClick={() => router.push(text.route || "")}
+              key={index}
+              disablePadding
+              selected={router.route === text.route}
+            >
               <ListItemButton>
-                <ListItemIcon>
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText primary={text} />
+                <ListItemIcon>{text.icon}</ListItemIcon>
+                <ListItemText primary={text.title} />
               </ListItemButton>
             </ListItem>
           ))}

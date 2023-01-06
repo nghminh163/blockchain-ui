@@ -89,7 +89,7 @@ export default function BlockDetailPage() {
                 {blockData?.header?.nonce}
               </Typography>
             </Grid>
-            <Grid item xs={2.5}>
+            <Grid item xs={1.5}>
               <Typography
                 sx={{
                   color: "#474d57",
@@ -110,6 +110,34 @@ export default function BlockDetailPage() {
               >
                 {blockData?.header?.bits}
               </Typography>
+            </Grid>
+            <Grid item xs={2.5}>
+              <Typography
+                sx={{
+                  color: "#474d57",
+                  fontSize: 12,
+                  lineHeight: "32px",
+                  fontWeight: "bold",
+                }}
+              >
+                Miner
+              </Typography>
+              <Link
+                href={"/address/" + blockData?.miner}
+                style={{ textDecoration: "none" }}
+              >
+                <Typography
+                  component="span"
+                  sx={{
+                    color: "#1e2329",
+                    fontSize: 20,
+                    lineHeight: "28px",
+                    textDecoration: "underline",
+                  }}
+                >
+                  {blockData?.miner}
+                </Typography>
+              </Link>
             </Grid>
           </Grid>
         </Box>
@@ -217,6 +245,6 @@ export default function BlockDetailPage() {
       </Box>
     </Layout>
   ) : (
-    "Not found"
+    ""
   );
 }

@@ -24,5 +24,6 @@ export interface BlockTx {
 
 export interface BlockDetail {
   header: BlockHeader;
+  miner: string;
   transactions: BlockTx[];
 }

@@ -2,13 +2,14 @@ import { Box, Grid, IconButton, Typography } from "@mui/material";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import { useMemo } from "react";
+import { isMaxPage } from "../utils/pagination";
 
 interface ITableProps {
   config: {
     title: string;
     flex: number;
     key: string;
-    format?: (value: number) => string;
+    format?: (value: any, row?: any) => string | React.ReactNode;
     align?: string;
   }[];
   data: any[];
@@ -18,7 +19,7 @@ interface ITableProps {
     currentPage: number;
     handlePageChange: (page: number) => void;
   };
-  onClickRow: (row: any) => void;
+  onClickRow?: (row: any) => void;
 }
 
 export default function Table({
@@ -30,8 +31,11 @@ export default function Table({
   const isLastPage = useMemo(
     () =>
       pagination &&
-      pagination?.currentPage + 1 ===
-        Math.round(pagination?.total / pagination?.rowPerPage),
+      isMaxPage(
+        pagination?.currentPage + 1,
+        pagination?.total,
+        pagination?.rowPerPage
+      ),
     [pagination]
   );
   return (
@@ -99,16 +103,18 @@ export default function Table({
                   }}
                 >
                   <Box display="flex" alignItems="center">
-                    <Typography
-                      sx={{
-                        fontSize: 14,
-                        color: "#474d57",
-                      }}
-                    >
-                      {header?.format && typeof value === "number"
-                        ? header.format(value)
-                        : value}
-                    </Typography>
+                    {header?.format ? (
+                      header.format(value, v)
+                    ) : (
+                      <Typography
+                        sx={{
+                          fontSize: 14,
+                          color: "#474d57",
+                        }}
+                      >
+                        {value}
+                      </Typography>
+                    )}
                   </Box>
                 </Grid>
               );
@@ -125,7 +131,9 @@ export default function Table({
           <Typography component="span">
             Total {pagination?.total} rows,{" "}
             {pagination?.rowPerPage * pagination?.currentPage + 1} ~{" "}
-            {pagination?.rowPerPage * pagination?.currentPage + 10} rows
+            {pagination?.rowPerPage * pagination?.currentPage +
+              (isLastPage ? data.length || 0 : pagination?.rowPerPage)}{" "}
+            rows
           </Typography>
           <Box alignItems="center" display="flex">
             <IconButton

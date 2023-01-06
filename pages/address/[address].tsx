@@ -6,56 +6,146 @@ import UTXOCollapse from "../../components/UTXOCollapse";
 import SendIcon from "@mui/icons-material/Send";
 import TransferModal from "../../components/TransferModal";
 import { useEffect, useMemo, useState } from "react";
-import useMeWallet from "../../hook/useMeWallet";
 import { useRouter } from "next/router";
-import { Balance, UTXO } from "../../types/address";
-import { getBalance, getUTXO } from "../../api/address";
+import { Balance, UTXO, IHistory } from "../../types/address";
+import { getBalance, getHistory, getUTXO } from "../../api/address";
 import { isNumber } from "lodash";
-import { RATE_UCOIN } from "../../constants";
+import { RATE_UCOIN, ROW_PER_PAGE } from "../../constants";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
+import { isMaxPage } from "../../utils/pagination";
+import Table from "../../components/Table";
+import { shortTxString } from "../../utils/parseTxName";
+import Chip from "@mui/material/Chip";
+import moment from "moment";
 
 // TODO: Add loding and 404 page
-// TODO: Add Transactions
-// TODO: Add UTXO
 
+const txConfig = [
+  {
+    title: "Tx Hash",
+    flex: 1.3,
+    key: "tx_hash",
+    format: (txHash: string | number) => (
+      <a
+        href={`/transactions/${txHash}`}
+        style={{
+          // visit
+          color: "#000",
+          textDecoration: "underline",
+          // hover
+        }}
+      >
+        {shortTxString(txHash as string)}
+      </a>
+    ),
+  },
+  {
+    title: "Amount",
+    flex: 1.3,
+    key: "amount",
+    format: (amount: string | number) => `${amount} UCoin`,
+  },
+  {
+    title: "From",
+    flex: 3,
+    key: "from_addr",
+    format: (from: string | number, row: any) => (
+      <Chip
+        label={from ? from : "Block reward"}
+        variant="outlined"
+        onClick={
+          from
+            ? () => {
+                location.assign("/address/" + from);
+              }
+            : undefined
+        }
+      />
+    ),
+  },
+  {
+    title: "Type",
+    flex: 1.5,
+    key: "tx_type",
+    format: (tx_type: string | number) => (
+      <Chip
+        label={tx_type === "IN" ? "Receive" : "Spend"}
+        color={tx_type === "IN" ? "success" : "error"}
+      />
+    ),
+  },
+  {
+    title: "To",
+    flex: 3.5,
+    key: "to_addr",
+    format: (to: string | number, row: any) => (
+      <Chip
+        label={to}
+        variant="outlined"
+        onClick={() => {
+          location.assign("/address/" + to);
+        }}
+      />
+    ),
+  },
+  {
+    title: "Timestamp",
+    flex: 1.2,
+    key: "timestamp",
+    format: (value: number | string) =>
+      moment.unix(value as number).format("DD/MM/YYYY HH:mm:ss"),
+  },
+];
 export default function AddressDetail() {
   const [isOpenTransferModal, setIsOpenTransferModal] = useState(false);
   const [isHideBalance, setIsHideBalance] = useState(false);
-  const [addressData, setAddressDate] = useState<Balance>();
-  const wallet = useMeWallet();
+  const [addressData, setAddressData] = useState<Balance>();
   const router = useRouter();
   const address = useMemo(
     () => router.query.address as string,
     [router.query.address]
   );
-  const isMe = useMemo(
-    () => address === "me" || address === wallet.address,
-    [address, wallet]
-  );
-
-  useEffect(() => {
-    if (isMe) {
-      setAddressDate(wallet);
-    }
-  }, [isMe, wallet]);
-
-  // utxo
-  const [utxoData, setUTXOData] = useState<UTXO>();
-  const [utxoPage, setUTXOPage] = useState<number>(1);
+  const [isMe, setIsMe] = useState(false);
 
   useEffect(() => {
     (async () => {
-      if (address) {
-        const _wallet = await getBalance(address);
-        if (isNumber(_wallet?.balance)) {
-          const _utxoData = await getUTXO(address, utxoPage);
-          setAddressDate(_wallet);
-          setUTXOData(_utxoData);
+      if (address && !addressData) {
+        const _myWallet = await getBalance();
+        if (address === "me" || address === _myWallet.address) {
+          setIsMe(true);
+          setAddressData(_myWallet);
+        } else {
+          const _wallet = await getBalance(address);
+          setAddressData(_wallet);
         }
       }
     })();
-  }, [address]);
+  }, [address, addressData]);
+  // utxo
+  const [utxoData, setUTXOData] = useState<UTXO>();
+  const [utxoPage, setUTXOPage] = useState<number>(1);
+  useEffect(() => {
+    (async () => {
+      if (addressData?.address && isNumber(addressData?.balance)) {
+        const _utxoData = await getUTXO(addressData?.address, utxoPage);
+        setUTXOData(_utxoData);
+      }
+    })();
+  }, [addressData, utxoPage]);
+
+  // transaction
+  const [txData, setTxData] = useState<IHistory>();
+  const [pageTx, setPageTx] = useState(0);
+  useEffect(() => {
+    (async () => {
+      if (addressData?.address && isNumber(addressData?.balance)) {
+        const _txData = await getHistory(addressData?.address, pageTx + 1);
+        setTxData(_txData);
+      }
+    })();
+  }, [addressData, pageTx]);
+
   return addressData ? (
     <Layout>
       <Typography variant="h4" sx={{ fontWeight: "bold", marginBottom: 3 }}>
@@ -146,7 +236,22 @@ export default function AddressDetail() {
         <Typography variant="h5" component="span" sx={{ fontWeight: "bold" }}>
           Transactions
         </Typography>
-        <Box sx={{ marginTop: 2 }}></Box>
+        <Box sx={{ marginTop: 2 }}>
+          {txData && (
+            <Table
+              config={txConfig}
+              data={txData.history}
+              pagination={{
+                currentPage: pageTx,
+                handlePageChange: (page) => {
+                  setPageTx(page);
+                },
+                rowPerPage: ROW_PER_PAGE,
+                total: txData.total,
+              }}
+            />
+          )}
+        </Box>
       </Box>
       <Box
         sx={{
@@ -168,15 +273,29 @@ export default function AddressDetail() {
             justifyContent="space-between"
           >
             <Typography component="span">
-              Total 123 rows, 1 ~ 10 rows
+              Total {utxoData?.total} rows, {ROW_PER_PAGE * (utxoPage - 1) + 1}{" "}
+              ~{" "}
+              {ROW_PER_PAGE * (utxoPage - 1) +
+                (isMaxPage(utxoPage, utxoData?.total)
+                  ? utxoData?.txouts?.length || 0
+                  : 10)}{" "}
+              rows
             </Typography>
             <Box alignItems="center" display="flex">
-              <IconButton sx={{ marginX: 1 }}>
+              <IconButton
+                disabled={utxoPage === 1}
+                sx={{ marginX: 1 }}
+                onClick={() => setUTXOPage(utxoPage - 1)}
+              >
                 <KeyboardArrowLeftIcon />
               </IconButton>
-              <Typography>1</Typography>
+              <Typography>{utxoPage}</Typography>
 
-              <IconButton sx={{ marginX: 1 }}>
+              <IconButton
+                sx={{ marginX: 1 }}
+                disabled={isMaxPage(utxoPage, utxoData?.total)}
+                onClick={() => setUTXOPage(utxoPage + 1)}
+              >
                 <KeyboardArrowRightIcon />
               </IconButton>
             </Box>
@@ -189,6 +308,6 @@ export default function AddressDetail() {
       />
     </Layout>
   ) : (
-    "Not found"
+    ""
   );
 }

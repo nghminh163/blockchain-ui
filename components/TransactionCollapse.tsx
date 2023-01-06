@@ -14,6 +14,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { BlockTx } from "../types/block";
 import { shortTxString } from "../utils/parseTxName";
 import { useState } from "react";
+import { useRouter } from "next/router";
 
 // TODO: Added amount input
 
@@ -25,17 +26,17 @@ export default function TransactionCollapse({
   idx: number;
 }) {
   const [open, setOpen] = useState<{ isFrom: boolean; content: string }>();
+  const router = useRouter();
   return (
     <Box sx={{ marginTop: 2 }}>
       <Accordion>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <Typography>
-            <b>Transaction</b> #0 -{" "}
+            <b>Transaction</b> #{idx + 1} -{" "}
             <Typography
               onClick={(e) => {
                 e.stopPropagation();
-                navigator.clipboard.writeText(tx.hash);
-                alert("Copy tx hash to clipboard");
+                router.push(`/transactions/${tx.hash}`);
               }}
               component={"span"}
               sx={{ color: "#ad9223" }}
@@ -53,14 +54,17 @@ export default function TransactionCollapse({
                 </Typography>
                 {tx.inputs.map((input, j) => {
                   const isCoinBase =
+                    input.prev_tx ===
                     "0000000000000000000000000000000000000000000000000000000000000000";
                   return (
                     <TransactionRow
                       key={`tx-collapse-${idx}-input-${j}`}
                       id={j}
-                      address={isCoinBase ? "Block Reward" : ""}
+                      address={
+                        isCoinBase ? "Block Reward" : input?.prev_output?.addr
+                      }
                       isFrom
-                      amount={isCoinBase ? 0 : 111111}
+                      amount={isCoinBase ? 0 : input?.prev_output?.amount}
                       onClick={() =>
                         setOpen({
                           isFrom: true,

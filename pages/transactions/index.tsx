@@ -46,7 +46,7 @@ const tableConfig = [
 
 const ROW_PER_PAGE = 10;
 
-export default function BlockListPage() {
+export default function TransactionListPage() {
   const [data, setData] = useState<Block[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(0);

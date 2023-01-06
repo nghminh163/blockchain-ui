@@ -98,7 +98,7 @@ export default function BlockDetailPage() {
                     textDecoration: "underline",
                   }}
                 >
-                  #0
+                  #{txData.block}
                 </Typography>
               </Link>
             </Grid>
@@ -144,21 +144,21 @@ export default function BlockDetailPage() {
             </Typography>
             {txData.inputs.map((input, j) => {
               const isCoinBase =
+                input.prev_tx ===
                 "0000000000000000000000000000000000000000000000000000000000000000";
               return (
                 <TransactionRow
                   key={`tx-input-${j}`}
                   id={j}
-                  address={isCoinBase ? "Block Reward" : ""}
+                  address={isCoinBase ? "Block Reward" : input.prev_output.addr}
                   isFrom
-                  amount={isCoinBase ? 0 : 111111}
+                  amount={isCoinBase ? 0 : input.prev_output.amount}
                   onClick={() =>
                     setOpen({
                       isFrom: true,
                       content: input.unlocking_script,
                     })
                   }
-                  // prevTx={input.prev_tx}
                 />
               );
             })}
@@ -187,6 +187,6 @@ export default function BlockDetailPage() {
       <ScriptDialog open={open} onClose={() => setOpen(undefined)} />
     </Layout>
   ) : (
-    "Not found"
+    ""
   );
 }

@@ -28,15 +28,34 @@ export function TransactionRow({
         </Typography>
         <div>
           <Box display="flex" gap={0.5}>
-            <Typography
-              component="span"
-              sx={{
-                fontSize: 15,
-                fontWeight: "bold",
-              }}
-            >
-              {address}
-            </Typography>
+            {address === "Block Reward" ? (
+              <Typography
+                component="span"
+                sx={{
+                  fontSize: 15,
+                  fontWeight: "bold",
+                }}
+              >
+                {address}
+              </Typography>
+            ) : (
+              <Link
+                href={`/address/${address}`}
+                style={{ textDecoration: "none" }}
+              >
+                <Typography
+                  component="span"
+                  sx={{
+                    color: "black",
+                    fontSize: 15,
+                    fontWeight: "bold",
+                    textDecoration: "underline",
+                  }}
+                >
+                  {address}
+                </Typography>
+              </Link>
+            )}
 
             {"•"}
             <Typography
