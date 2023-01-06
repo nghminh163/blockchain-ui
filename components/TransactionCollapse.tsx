@@ -100,7 +100,7 @@ export default function TransactionCollapse({
   );
 }
 
-function ScriptDialog({
+export function ScriptDialog({
   open,
   onClose,
 }: {

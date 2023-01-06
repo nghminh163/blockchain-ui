@@ -1,3 +1,5 @@
+import { TxIn, TxOut } from "./transaction";
+
 interface BlockHeader {
   bits: string;
   hash: string;
@@ -16,16 +18,8 @@ export default Block;
 
 export interface BlockTx {
   hash: string;
-  inputs: {
-    output_index: number;
-    prev_tx: string;
-    unlocking_script: string;
-  }[];
-  outputs: {
-    addr: string;
-    amount: number;
-    locking_script: string;
-  }[];
+  inputs: TxIn[];
+  outputs: TxOut[];
 }
 
 export interface BlockDetail {
