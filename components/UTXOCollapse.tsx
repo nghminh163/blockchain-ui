@@ -6,12 +6,16 @@ import {
   Box,
   Popover,
   Grid,
+  Link,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import { useState, MouseEvent } from "react";
+import DoDisturbOnIcon from "@mui/icons-material/DoDisturbOn";
+import { useState, MouseEvent, useMemo } from "react";
+import { UTXOTxOut } from "../types/address";
+import moment from "moment";
 
-export default function UTXOCollapse() {
+export default function UTXOCollapse({ txOut }: { txOut: UTXOTxOut }) {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
   const handlePopoverOpen = (event: MouseEvent<HTMLElement>) => {
@@ -23,9 +27,9 @@ export default function UTXOCollapse() {
   };
 
   const open = Boolean(anchorEl);
-
+  const isSpent = useMemo(() => txOut.spent_tx !== null, [txOut]);
   return (
-    <Accordion>
+    <Accordion sx={{ marginTop: 2 }}>
       <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
         aria-controls={`tx-0-content`}
@@ -38,7 +42,7 @@ export default function UTXOCollapse() {
           onMouseLeave={handlePopoverClose}
           sx={{ marginRight: 2 }}
         >
-          <CheckCircleIcon />
+          {isSpent ? <CheckCircleIcon /> : <DoDisturbOnIcon />}
         </Box>
         <Popover
           id="mouse-over-popover"
@@ -59,14 +63,15 @@ export default function UTXOCollapse() {
           disableRestoreFocus
         >
           <Typography sx={{ p: 1 }}>
-            {/* Spent coin is a transaction output that is already used as input of
-            another transaction */}
-            Unspent coin is a transaction output that has not been used as input
-            in any other transaction
+            {isSpent
+              ? "Spent coin is a transaction output that is already used as input of another transaction"
+              : "Unspent coin is a transaction output that has not been used as input in any other transaction"}
           </Typography>
         </Popover>
 
-        <Typography>50 UCoin - Block #0</Typography>
+        <Typography>
+          {txOut.amount} UCoin - Block #{txOut.block}
+        </Typography>
       </AccordionSummary>
       <AccordionDetails>
         <>
@@ -90,7 +95,7 @@ export default function UTXOCollapse() {
                   lineHeight: "28px",
                 }}
               >
-                04/01/2023 23:21:19
+                {moment.unix(txOut.timestamp).format("DD/MM/YYYY HH:mm:ss")}
               </Typography>
             </Grid>
             <Grid item xs={2}>
@@ -104,16 +109,22 @@ export default function UTXOCollapse() {
               >
                 Block
               </Typography>
-              <Typography
-                component="span"
-                sx={{
-                  color: "#1e2329",
-                  fontSize: 18,
-                  lineHeight: "28px",
-                }}
+              <Link
+                href={`/blocks/${txOut.block}`}
+                style={{ textDecoration: "none" }}
               >
-                #0 (000...0000)
-              </Typography>
+                <Typography
+                  component="span"
+                  sx={{
+                    color: "#1e2329",
+                    fontSize: 18,
+                    lineHeight: "28px",
+                    textDecoration: "underline",
+                  }}
+                >
+                  {txOut.block}
+                </Typography>
+              </Link>
             </Grid>
             <Grid item xs={2.5}>
               <Typography
@@ -169,16 +180,22 @@ export default function UTXOCollapse() {
             >
               Receive Transaction
             </Typography>
-            <Typography
-              component="span"
-              sx={{
-                color: "#1e2329",
-                fontSize: 18,
-                lineHeight: "28px",
-              }}
+            <Link
+              href={`/transactions/${txOut.received_tx}`}
+              style={{ textDecoration: "none" }}
             >
-              0x00
-            </Typography>
+              <Typography
+                component="span"
+                sx={{
+                  color: "#1e2329",
+                  fontSize: 18,
+                  lineHeight: "28px",
+                  textDecoration: "underline",
+                }}
+              >
+                {txOut.received_tx}
+              </Typography>
+            </Link>
           </Box>
           <Box sx={{ marginTop: 2 }}>
             <Typography
@@ -191,16 +208,35 @@ export default function UTXOCollapse() {
             >
               Spend Transaction
             </Typography>
-            <Typography
-              component="span"
-              sx={{
-                color: "#1e2329",
-                fontSize: 18,
-                lineHeight: "28px",
-              }}
-            >
-              0x00
-            </Typography>
+            {txOut.spent_tx === null ? (
+              <Typography
+                component="span"
+                sx={{
+                  color: "#1e2329",
+                  fontSize: 18,
+                  lineHeight: "28px",
+                }}
+              >
+                Coin is unspent so spend transaction not found
+              </Typography>
+            ) : (
+              <Link
+                href={`/transactions/${txOut.spent_tx}`}
+                style={{ textDecoration: "none" }}
+              >
+                <Typography
+                  component="span"
+                  sx={{
+                    color: "#1e2329",
+                    fontSize: 18,
+                    lineHeight: "28px",
+                    textDecoration: "underline",
+                  }}
+                >
+                  {txOut.spent_tx}
+                </Typography>
+              </Link>
+            )}
           </Box>
         </>
       </AccordionDetails>
