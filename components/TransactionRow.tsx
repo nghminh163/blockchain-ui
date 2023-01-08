@@ -28,7 +28,7 @@ export function TransactionRow({
     [prevTx]
   );
   return (
-    <Box sx={{ marginTop: 2, borderBottom: "1px solid #f5f5f5" }}>
+    <Box sx={{ marginTop: 2, borderBottom: "2px solid #f5f5f5" }} height={72}>
       <div style={{ display: "flex", alignItems: "center", marginBottom: 8 }}>
         <Typography variant="body1" sx={{ marginRight: 2, fontSize: 14 }}>
           #{id}

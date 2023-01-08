@@ -32,7 +32,6 @@ export default function TransferModal({
         receiver,
       });
       onClose();
-      router.push("/mempool");
     } catch (err: any) {
       if (err instanceof AxiosError<{ message: string }>) {
         setError(err?.response?.data?.message);

@@ -1,23 +1,23 @@
-import { Box, Grid, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
+import io from "socket.io-client";
 import Layout from "../components/Layout";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
-import { BlockDetail, BlockTx } from "../types/block";
-import moment from "moment";
-import Link from "next/link";
+import { BlockTx } from "../types/block";
 import TransactionCollapse from "../components/TransactionCollapse";
 import { getMempool } from "../api/node";
+const socket = io("http://localhost:3000");
 
-export default function MempoolPage() {
-  const [mpData, setMPData] = useState<BlockTx[]>();
-
+export default function MempoolPage({ mempools }: { mempools: BlockTx[] }) {
+  const [mpData, setMPData] = useState<BlockTx[]>(mempools);
   useEffect(() => {
-    (async () => {
-      try {
-        const _mpData = await getMempool();
-        setMPData(_mpData);
-      } catch (e) {}
-    })();
+    socket.on("mempool", async () => {
+      const _mpData = await getMempool();
+      setMPData(_mpData);
+    });
+
+    return () => {
+      socket.off("mempool");
+    };
   }, []);
   return mpData ? (
     <Layout>
@@ -53,4 +53,9 @@ export default function MempoolPage() {
   ) : (
     ""
   );
+}
+
+export async function getServerSideProps() {
+  const mempools = await getMempool();
+  return { props: { mempools } };
 }
