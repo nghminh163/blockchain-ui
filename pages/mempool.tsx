@@ -5,13 +5,16 @@ import { useEffect, useState } from "react";
 import { BlockTx } from "../types/block";
 import TransactionCollapse from "../components/TransactionCollapse";
 import { getMempool } from "../api/node";
+import { useAlert } from "react-alert";
 const socket = io("http://localhost:3000");
 
 export default function MempoolPage({ mempools }: { mempools: BlockTx[] }) {
   const [mpData, setMPData] = useState<BlockTx[]>(mempools);
+  const alert = useAlert();
   useEffect(() => {
     socket.on("mempool", async () => {
       const _mpData = await getMempool();
+      alert.success("New transaction added to mempool");
       setMPData(_mpData);
     });
 
