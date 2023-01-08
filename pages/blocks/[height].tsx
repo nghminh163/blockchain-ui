@@ -1,35 +1,20 @@
 import { Box, Grid, Typography } from "@mui/material";
 import Layout from "../../components/Layout";
-import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/router";
 import { BlockDetail } from "../../types/block";
 import { getBlockByHeight } from "../../api/blocks";
 import moment from "moment";
 import Link from "next/link";
 import TransactionCollapse from "../../components/TransactionCollapse";
 
-export default function BlockDetailPage() {
-  const router = useRouter();
-  const height = useMemo(
-    () => router.query.height as string,
-    [router.query.height]
-  );
-  const [blockData, setBlockData] = useState<BlockDetail>();
-
-  useEffect(() => {
-    (async () => {
-      if (height) {
-        try {
-          const _blockData = await getBlockByHeight(parseInt(height));
-          setBlockData(_blockData);
-        } catch (e) {}
-      }
-    })();
-  }, [height]);
-  return blockData ? (
+export default function BlockDetailPage({
+  blockDetail,
+}: {
+  blockDetail: BlockDetail;
+}) {
+  return blockDetail ? (
     <Layout>
       <Typography variant="h4" sx={{ fontWeight: "bold", marginBottom: 3 }}>
-        Detail of Block #{blockData?.header?.height}
+        Detail of Block #{blockDetail?.header?.height}
       </Typography>
       <Box
         sx={{
@@ -63,7 +48,7 @@ export default function BlockDetailPage() {
                 }}
               >
                 {moment
-                  .unix(blockData?.header?.timestamp)
+                  .unix(blockDetail?.header?.timestamp)
                   .format("DD/MM/YYYY HH:mm:ss")}
               </Typography>
             </Grid>
@@ -86,7 +71,7 @@ export default function BlockDetailPage() {
                   lineHeight: "28px",
                 }}
               >
-                {blockData?.header?.nonce}
+                {blockDetail?.header?.nonce}
               </Typography>
             </Grid>
             <Grid item xs={1.5}>
@@ -108,7 +93,7 @@ export default function BlockDetailPage() {
                   lineHeight: "28px",
                 }}
               >
-                {blockData?.header?.bits}
+                {blockDetail?.header?.bits}
               </Typography>
             </Grid>
             <Grid item xs={2.5}>
@@ -123,7 +108,7 @@ export default function BlockDetailPage() {
                 Miner
               </Typography>
               <Link
-                href={"/address/" + blockData?.miner}
+                href={"/address/" + blockDetail?.miner}
                 style={{ textDecoration: "none" }}
               >
                 <Typography
@@ -135,7 +120,7 @@ export default function BlockDetailPage() {
                     textDecoration: "underline",
                   }}
                 >
-                  {blockData?.miner}
+                  {blockDetail?.miner}
                 </Typography>
               </Link>
             </Grid>
@@ -150,7 +135,7 @@ export default function BlockDetailPage() {
               fontWeight: "bold",
             }}
           >
-            {blockData?.header?.height === 0 ? "Genesis" : "Block"} hash
+            {blockDetail?.header?.height === 0 ? "Genesis" : "Block"} hash
           </Typography>
           <Typography
             component="span"
@@ -160,7 +145,7 @@ export default function BlockDetailPage() {
               lineHeight: "28px",
             }}
           >
-            {blockData?.header?.hash}
+            {blockDetail?.header?.hash}
           </Typography>
         </Box>
         <Box sx={{ marginTop: 2 }}>
@@ -182,7 +167,7 @@ export default function BlockDetailPage() {
               lineHeight: "28px",
             }}
           >
-            {blockData?.header?.merkle_root}
+            {blockDetail?.header?.merkle_root}
           </Typography>
         </Box>
         <Box sx={{ marginTop: 2 }}>
@@ -196,7 +181,7 @@ export default function BlockDetailPage() {
           >
             Previous Block Hash
           </Typography>
-          {blockData?.header?.height === 0 ? (
+          {blockDetail?.header?.height === 0 ? (
             <Typography
               component="span"
               sx={{
@@ -205,11 +190,11 @@ export default function BlockDetailPage() {
                 lineHeight: "28px",
               }}
             >
-              {blockData?.header?.prev_block_hash}
+              {blockDetail?.header?.prev_block_hash}
             </Typography>
           ) : (
             <Link
-              href={`/blocks/${blockData?.header?.height - 1}`}
+              href={`/blocks/${blockDetail?.header?.height - 1}`}
               style={{
                 textDecoration: "none",
               }}
@@ -223,7 +208,7 @@ export default function BlockDetailPage() {
                   textDecoration: "underline",
                 }}
               >
-                {blockData?.header?.prev_block_hash}
+                {blockDetail?.header?.prev_block_hash}
               </Typography>
             </Link>
           )}
@@ -239,7 +224,7 @@ export default function BlockDetailPage() {
         <Typography variant="h5" component="span" sx={{ fontWeight: "bold" }}>
           Transactions
         </Typography>
-        {blockData?.transactions?.map((tx, i) => (
+        {blockDetail?.transactions?.map((tx, i) => (
           <TransactionCollapse key={`tx-collapse-${i}`} tx={tx} idx={i} />
         ))}
       </Box>
@@ -247,4 +232,16 @@ export default function BlockDetailPage() {
   ) : (
     ""
   );
+}
+
+export async function getServerSideProps({
+  params: { height },
+}: {
+  params: { height: string };
+}) {
+  try {
+    const _height = parseInt(height as string);
+    const blockDetail = await getBlockByHeight(_height);
+    return { props: { blockDetail } };
+  } catch (e) {}
 }
