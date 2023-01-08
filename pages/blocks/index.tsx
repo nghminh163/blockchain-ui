@@ -8,6 +8,7 @@ import { useRouter } from "next/router";
 import io from "socket.io-client";
 import { useEffect, useState } from "react";
 import { useAlert } from "react-alert";
+import { URL_SERVER } from "../../constants";
 const socket = io(URL_SERVER);
 
 const tableConfig = [
