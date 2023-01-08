@@ -8,7 +8,7 @@ import { useRouter } from "next/router";
 import io from "socket.io-client";
 import { useEffect, useState } from "react";
 import { useAlert } from "react-alert";
-const socket = io("http://localhost:3000");
+const socket = io(URL_SERVER);
 
 const tableConfig = [
   {
