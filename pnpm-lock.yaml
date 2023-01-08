@@ -12,6 +12,7 @@ specifiers:
   '@types/lodash': ^4.14.191
   '@types/node': 18.11.18
   '@types/react': 18.0.26
+  '@types/react-alert': ^7.0.2
   '@types/react-dom': 18.0.10
   axios: ^1.2.2
   eslint: 8.31.0
@@ -20,6 +21,8 @@ specifiers:
   moment: ^2.29.4
   next: 13.1.1
   react: 18.2.0
+  react-alert: ^7.0.3
+  react-alert-template-basic: ^1.0.2
   react-dom: 18.2.0
   socket.io-client: ^4.5.4
   typescript: 4.9.4
@@ -35,6 +38,7 @@ dependencies:
   '@next/font': 13.1.1
   '@types/node': 18.11.18
   '@types/react': 18.0.26
+  '@types/react-alert': 7.0.2
   '@types/react-dom': 18.0.10
   axios: 1.2.2
   eslint: 8.31.0
@@ -43,6 +47,8 @@ dependencies:
   moment: 2.29.4
   next: 13.1.1_biqbaboplfbrettd7655fr4n2y
   react: 18.2.0
+  react-alert: 7.0.3_biqbaboplfbrettd7655fr4n2y
+  react-alert-template-basic: 1.0.2_react@18.2.0
   react-dom: 18.2.0_react@18.2.0
   socket.io-client: 4.5.4
   typescript: 4.9.4
@@ -678,6 +684,12 @@ packages:
 
   /@types/prop-types/15.7.5:
     resolution: {integrity: sha512-JCB8C6SnDoQf0cNycqd/35A7MjcnK+ZTqE7judS6o7utxUCg6imJg3QK2qzHKszlTjcj2cn+NwMB2i96ubpj7w==}
+    dev: false
+
+  /@types/react-alert/7.0.2:
+    resolution: {integrity: sha512-IImZGkaLhsFfDxzvlMHvbo0tE06B9FqXZrVLBr58gfPINRwITPKWap42RinHEFbF/l1yUJeDoR3NTx7hwuh2ng==}
+    dependencies:
+      '@types/react': 18.0.26
     dev: false
 
   /@types/react-dom/18.0.10:
@@ -2341,6 +2353,26 @@ packages:
 
   /queue-microtask/1.2.3:
     resolution: {integrity: sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==}
+    dev: false
+
+  /react-alert-template-basic/1.0.2_react@18.2.0:
+    resolution: {integrity: sha512-nJSIknM5xN/GzKdKkb5/X9zdiLxSqctww3mEouyeR891nUGP8guqFpCGD8vCjFYSZtq8z3tGcAKBG1XjtLHFHQ==}
+    peerDependencies:
+      react: ^16.2.0 || ^17
+    dependencies:
+      react: 18.2.0
+    dev: false
+
+  /react-alert/7.0.3_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-cZ2ZhxytECTxljDfBKpQmwWbfJQFzFf2Qf03L/IB5shbEXtWhDD2JjiW60rwmKT1oZoU+GEnUQw5MFM5+f0B6A==}
+    peerDependencies:
+      react: ^16.8.1 || ^17
+      react-dom: ^16.8.1 || ^17
+    dependencies:
+      prop-types: 15.8.1
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+      react-transition-group: 4.4.5_biqbaboplfbrettd7655fr4n2y
     dev: false
 
   /react-dom/18.2.0_react@18.2.0:

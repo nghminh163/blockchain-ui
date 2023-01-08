@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { Typography } from "@mui/material";
 import Layout from "../../components/Layout";
 import Table from "../../components/Table";
@@ -6,6 +5,10 @@ import Block from "../../types/block";
 import { getBlocks } from "../../api/blocks";
 import moment from "moment";
 import { useRouter } from "next/router";
+import io from "socket.io-client";
+import { useEffect, useState } from "react";
+import { useAlert } from "react-alert";
+const socket = io("http://localhost:3000");
 
 const tableConfig = [
   {
@@ -46,39 +49,65 @@ const tableConfig = [
 
 const ROW_PER_PAGE = 10;
 
-export default function BlockListPage() {
-  const [data, setData] = useState<Block[]>([]);
-  const [total, setTotal] = useState(0);
-  const [page, setPage] = useState(0);
+export default function BlockListPage({
+  blocks,
+  page,
+}: {
+  blocks: {
+    blocks: Block[];
+    total: number;
+  };
+  page: number;
+}) {
+  const [blockData, setBlockData] = useState(blocks);
+  const router = useRouter();
+  const alert = useAlert();
   const handlePageChange = (page: number) => {
-    setPage(page);
+    router.push(`/blocks?page=${page}`);
   };
   useEffect(() => {
-    (async () => {
-      const blocks = await getBlocks(page + 1, ROW_PER_PAGE);
-      setData(blocks.blocks);
-      setTotal(blocks.total);
-    })();
-  }, [page]);
-  const router = useRouter();
-  return (
+    socket.on("block", async () => {
+      const _blockData = await getBlocks(page + 1, ROW_PER_PAGE);
+      alert.success("New block added");
+      setBlockData(_blockData);
+    });
+
+    return () => {
+      socket.off("block");
+    };
+  }, []);
+  return blockData ? (
     <Layout>
       <Typography variant="h4" sx={{ fontWeight: "bold", marginBottom: 3 }}>
         Blocks
       </Typography>
       <Table
         pagination={{
-          total,
+          total: blockData?.total,
           rowPerPage: ROW_PER_PAGE,
           currentPage: page,
           handlePageChange,
         }}
         config={tableConfig}
-        data={data}
+        data={blockData?.blocks}
         onClickRow={(row: Block) => {
           router.push(`/blocks/${row.height}`);
         }}
       />
     </Layout>
+  ) : (
+    ""
   );
+}
+
+export async function getServerSideProps({
+  query: { page = 0 },
+}: {
+  query: { page: number | string };
+}) {
+  try {
+    const _page = parseInt(page as string);
+    const blocks = await getBlocks(_page + 1, ROW_PER_PAGE);
+    return { props: { blocks, page: _page } };
+  } catch (e) {}
 }

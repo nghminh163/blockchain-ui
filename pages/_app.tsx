@@ -2,6 +2,8 @@ import * as React from "react";
 import type { AppProps } from "next/app";
 import { CacheProvider, EmotionCache } from "@emotion/react";
 import { ThemeProvider, CssBaseline, createTheme } from "@mui/material";
+import { transitions, positions, Provider as AlertProvider } from "react-alert";
+import AlertTemplate from "react-alert-template-basic";
 
 import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
@@ -18,6 +20,12 @@ interface MyAppProps extends AppProps {
 const clientSideEmotionCache = createEmotionCache();
 
 const lightTheme = createTheme(myTheme);
+const options = {
+  position: positions.BOTTOM_CENTER,
+  timeout: 5000,
+  offset: "30px",
+  transition: transitions.SCALE,
+};
 
 const MyApp: React.FunctionComponent<MyAppProps> = (props) => {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
@@ -25,8 +33,10 @@ const MyApp: React.FunctionComponent<MyAppProps> = (props) => {
   return (
     <CacheProvider value={emotionCache}>
       <ThemeProvider theme={lightTheme}>
-        <CssBaseline />
-        <Component {...pageProps} />
+        <AlertProvider template={AlertTemplate} {...options}>
+          <CssBaseline />
+          <Component {...pageProps} />
+        </AlertProvider>
       </ThemeProvider>
     </CacheProvider>
   );
