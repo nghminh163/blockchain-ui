@@ -1,7 +1,7 @@
 import { Typography } from "@mui/material";
 import Layout from "../../components/Layout";
 import Table from "../../components/Table";
-import Block from "../../types/block";
+import Block, { BlockResponse } from "../../types/block";
 import { getBlocks } from "../../api/blocks";
 import moment from "moment";
 import { useRouter } from "next/router";
@@ -54,13 +54,15 @@ export default function BlockListPage({
   blocks,
   page,
 }: {
-  blocks: {
-    blocks: Block[];
-    total: number;
-  };
+  blocks: BlockResponse;
   page: number;
 }) {
-  const [blockData, setBlockData] = useState(blocks);
+  const [blockData, setBlockData] = useState<BlockResponse | undefined>();
+  useEffect(() => {
+    if (blocks) {
+      setBlockData(blocks);
+    }
+  }, [blocks]);
   const router = useRouter();
   const alert = useAlert();
   const handlePageChange = (page: number) => {
@@ -76,7 +78,7 @@ export default function BlockListPage({
     return () => {
       socket.off("block");
     };
-  }, []);
+  }, [alert, page]);
   return blockData ? (
     <Layout>
       <Typography variant="h4" sx={{ fontWeight: "bold", marginBottom: 3 }}>

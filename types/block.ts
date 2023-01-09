@@ -27,3 +27,8 @@ export interface BlockDetail {
   miner: string;
   transactions: BlockTx[];
 }
+
+export interface BlockResponse {
+  blocks: Block[];
+  total: number;
+}
