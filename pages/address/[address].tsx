@@ -8,7 +8,11 @@ import TransferModal from "../../components/TransferModal";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/router";
 import { Balance, UTXO, IHistory } from "../../types/address";
-import { getBalance, getHistory, getUTXO } from "../../api/address";
+import {
+  getBalance as getBalanceCSR,
+  getHistory,
+  getUTXO,
+} from "../../api/address";
 import { isNumber } from "lodash";
 import { RATE_UCOIN, ROW_PER_PAGE } from "../../constants";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";

@@ -1,10 +1,17 @@
 import axios from "axios";
-import { URL_SERVER } from "../constants";
+import { IO_SERVER, URL_SERVER } from "../constants";
 import { Balance, UTXO, IHistory } from "../types/address";
 
 export async function getBalance(address = "me") {
   const { data } = await axios.get<Balance>(
     `${URL_SERVER}/addr/balance/${address}`
+  );
+  return data;
+}
+
+export async function getBalanceCSR(address = "me") {
+  const { data } = await axios.get<Balance>(
+    `${IO_SERVER}/addr/balance/${address}`
   );
   return data;
 }
