@@ -8,11 +8,7 @@ import TransferModal from "../../components/TransferModal";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/router";
 import { Balance, UTXO, IHistory } from "../../types/address";
-import {
-  getBalance as getBalanceCSR,
-  getHistory,
-  getUTXO,
-} from "../../api/address";
+import { getBalanceCSR, getHistoryCSR, getUTXOCSR } from "../../api/address";
 import { isNumber } from "lodash";
 import { RATE_UCOIN, ROW_PER_PAGE } from "../../constants";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
@@ -115,12 +111,12 @@ export default function AddressDetail() {
   useEffect(() => {
     (async () => {
       if (address && !addressData) {
-        const _myWallet = await getBalance();
+        const _myWallet = await getBalanceCSR();
         if (address === "me" || address === _myWallet.address) {
           setIsMe(true);
           setAddressData(_myWallet);
         } else {
-          const _wallet = await getBalance(address);
+          const _wallet = await getBalanceCSR(address);
           setAddressData(_wallet);
         }
       }
@@ -132,7 +128,7 @@ export default function AddressDetail() {
   useEffect(() => {
     (async () => {
       if (addressData?.address && isNumber(addressData?.balance)) {
-        const _utxoData = await getUTXO(addressData?.address, utxoPage);
+        const _utxoData = await getUTXOCSR(addressData?.address, utxoPage);
         setUTXOData(_utxoData);
       }
     })();
@@ -144,7 +140,7 @@ export default function AddressDetail() {
   useEffect(() => {
     (async () => {
       if (addressData?.address && isNumber(addressData?.balance)) {
-        const _txData = await getHistory(addressData?.address, pageTx + 1);
+        const _txData = await getHistoryCSR(addressData?.address, pageTx + 1);
         setTxData(_txData);
       }
     })();
