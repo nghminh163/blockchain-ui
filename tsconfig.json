@@ -22,7 +22,8 @@
   "include": [
     "next-env.d.ts",
     "**/*.ts",
-    "**/*.tsx"
+    "**/*.tsx",
+    "react-alert.d.ts"
   ],
   "exclude": [
     "node_modules"
