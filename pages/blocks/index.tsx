@@ -8,8 +8,8 @@ import { useRouter } from "next/router";
 import io from "socket.io-client";
 import { useEffect, useState } from "react";
 import { useAlert } from "react-alert";
-import { URL_SERVER } from "../../constants";
-const socket = io(URL_SERVER);
+import { IO_SERVER } from "../../constants";
+const socket = io(IO_SERVER);
 
 const tableConfig = [
   {
@@ -112,5 +112,7 @@ export async function getServerSideProps({
     const _page = parseInt(page as string);
     const blocks = await getBlocks(_page + 1, ROW_PER_PAGE);
     return { props: { blocks, page: _page } };
-  } catch (e) {}
+  } catch (e) {
+    throw e;
+  }
 }

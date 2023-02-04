@@ -243,5 +243,7 @@ export async function getServerSideProps({
     const _height = parseInt(height as string);
     const blockDetail = await getBlockByHeight(_height);
     return { props: { blockDetail } };
-  } catch (e) {}
+  } catch (e) {
+    throw e
+  }
 }

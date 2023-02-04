@@ -6,8 +6,8 @@ import { BlockTx } from "../types/block";
 import TransactionCollapse from "../components/TransactionCollapse";
 import { getMempool } from "../api/node";
 import { useAlert } from "react-alert";
-import { URL_SERVER } from "../constants";
-const socket = io(URL_SERVER);
+import { IO_SERVER } from "../constants";
+const socket = io(IO_SERVER);
 
 export default function MempoolPage({ mempools }: { mempools: BlockTx[] }) {
   const [mpData, setMPData] = useState<BlockTx[]>(mempools);
