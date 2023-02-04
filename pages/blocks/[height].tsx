@@ -1,7 +1,7 @@
 import { Box, Grid, Typography } from "@mui/material";
 import Layout from "../../components/Layout";
 import { BlockDetail } from "../../types/block";
-import { getBlockByHeight } from "../../api/blocks";
+import { getBlockByHeightSSR } from "../../api/blocks";
 import moment from "moment";
 import Link from "next/link";
 import TransactionCollapse from "../../components/TransactionCollapse";
@@ -241,9 +241,9 @@ export async function getServerSideProps({
 }) {
   try {
     const _height = parseInt(height as string);
-    const blockDetail = await getBlockByHeight(_height);
+    const blockDetail = await getBlockByHeightSSR(_height);
     return { props: { blockDetail } };
   } catch (e) {
-    throw e
+    throw e;
   }
 }

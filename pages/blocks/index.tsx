@@ -2,7 +2,7 @@ import { Typography } from "@mui/material";
 import Layout from "../../components/Layout";
 import Table from "../../components/Table";
 import Block, { BlockResponse } from "../../types/block";
-import { getBlocks } from "../../api/blocks";
+import { getBlocks, getBlocksSSR } from "../../api/blocks";
 import moment from "moment";
 import { useRouter } from "next/router";
 import io from "socket.io-client";
@@ -110,7 +110,7 @@ export async function getServerSideProps({
 }) {
   try {
     const _page = parseInt(page as string);
-    const blocks = await getBlocks(_page + 1, ROW_PER_PAGE);
+    const blocks = await getBlocksSSR(_page + 1, ROW_PER_PAGE);
     return { props: { blocks, page: _page } };
   } catch (e) {
     throw e;

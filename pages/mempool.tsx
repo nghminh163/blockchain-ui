@@ -4,7 +4,7 @@ import Layout from "../components/Layout";
 import { useEffect, useState } from "react";
 import { BlockTx } from "../types/block";
 import TransactionCollapse from "../components/TransactionCollapse";
-import { getMempool } from "../api/node";
+import { getMempool, getMempoolSSR } from "../api/node";
 import { useAlert } from "react-alert";
 import { IO_SERVER } from "../constants";
 const socket = io(IO_SERVER);
@@ -60,6 +60,6 @@ export default function MempoolPage({ mempools }: { mempools: BlockTx[] }) {
 }
 
 export async function getServerSideProps() {
-  const mempools = await getMempool();
+  const mempools = await getMempoolSSR();
   return { props: { mempools } };
 }
