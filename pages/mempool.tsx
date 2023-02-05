@@ -15,7 +15,7 @@ export default function MempoolPage({ mempools }: { mempools: BlockTx[] }) {
   useEffect(() => {
     socket.on("mempool", async () => {
       const _mpData = await getMempool();
-      alert.success("New transaction added to mempool");
+      alert.success("Mempool updated");
       setMPData(_mpData);
     });
 

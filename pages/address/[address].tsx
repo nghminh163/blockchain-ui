@@ -208,7 +208,7 @@ export default function AddressDetail() {
                 }}
                 component={"span"}
               >
-                {addressData.balance} UCoin
+                {addressData.balance || 0} UCoin
               </Typography>
               <Typography
                 sx={{
