@@ -63,6 +63,7 @@ export default function TransactionCollapse({
                       address={
                         isCoinBase ? "Block Reward" : input?.prev_output?.addr
                       }
+                      prevTx={input.prev_tx}
                       isFrom
                       amount={isCoinBase ? 0 : input?.prev_output?.amount}
                       onClick={() =>

@@ -148,6 +148,7 @@ export default function BlockDetailPage() {
                 "0000000000000000000000000000000000000000000000000000000000000000";
               return (
                 <TransactionRow
+                  prevTx={input.prev_tx}
                   key={`tx-input-${j}`}
                   id={j}
                   address={isCoinBase ? "Block Reward" : input.prev_output.addr}

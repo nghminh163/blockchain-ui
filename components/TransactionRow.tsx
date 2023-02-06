@@ -21,12 +21,9 @@ export function TransactionRow({
   amount,
   onClick,
 }: ITransactionRowProps) {
-  const isCoinBase = useMemo(
-    () =>
-      prevTx ===
-      "0000000000000000000000000000000000000000000000000000000000000000",
-    [prevTx]
-  );
+  const isCoinBase =
+    prevTx ===
+    "0000000000000000000000000000000000000000000000000000000000000000";
   return (
     <Box sx={{ marginTop: 2, borderBottom: "2px solid #f5f5f5" }} height={72}>
       <div style={{ display: "flex", alignItems: "center", marginBottom: 8 }}>
@@ -36,22 +33,38 @@ export function TransactionRow({
         <div>
           <Box display="flex" gap={0.5} alignItems="center">
             {isFrom ? (
-              <Link
-                href={`/transactions/${prevTx}`}
-                style={{ textDecoration: "none" }}
-              >
-                <Typography
-                  component="span"
-                  sx={{
-                    color: "black",
-                    fontSize: 15,
-                    fontWeight: "bold",
-                    textDecoration: "underline",
-                  }}
+              isCoinBase ? (
+                <div style={{ textDecoration: "none" }}>
+                  <Typography
+                    component="span"
+                    sx={{
+                      color: "black",
+                      fontSize: 15,
+                      fontWeight: "bold",
+                      textDecoration: "underline",
+                    }}
+                  >
+                    {shortTxString(prevTx, 8)}
+                  </Typography>
+                </div>
+              ) : (
+                <Link
+                  href={`/transactions/${prevTx}`}
+                  style={{ textDecoration: "none" }}
                 >
-                  {shortTxString(prevTx, 8)}
-                </Typography>
-              </Link>
+                  <Typography
+                    component="span"
+                    sx={{
+                      color: "black",
+                      fontSize: 15,
+                      fontWeight: "bold",
+                      textDecoration: "underline",
+                    }}
+                  >
+                    {shortTxString(prevTx, 8)}
+                  </Typography>
+                </Link>
+              )
             ) : (
               <Link
                 href={`/address/${address}`}
@@ -86,7 +99,6 @@ export function TransactionRow({
               {" script"}
             </Typography>
           </Box>
-
           {isFrom && !isCoinBase && (
             <Typography
               sx={{
