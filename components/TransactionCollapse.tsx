@@ -72,7 +72,6 @@ export default function TransactionCollapse({
                           content: input.unlocking_script,
                         })
                       }
-                      prevTx={input.prev_tx}
                     />
                   );
                 })}
