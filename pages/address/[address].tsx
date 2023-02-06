@@ -110,7 +110,7 @@ export default function AddressDetail() {
 
   useEffect(() => {
     (async () => {
-      if (address && !addressData) {
+      if (address) {
         const _myWallet = await getBalance();
         if (address === "me" || address === _myWallet.address) {
           setIsMe(true);
@@ -121,7 +121,7 @@ export default function AddressDetail() {
         }
       }
     })();
-  }, [address, addressData]);
+  }, [address]);
   // utxo
   const [utxoData, setUTXOData] = useState<UTXO>();
   const [utxoPage, setUTXOPage] = useState<number>(1);
